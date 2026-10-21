@@ -35,7 +35,17 @@ endif
 SRCS = $(CORE_SRCS) $(SIMD_SRCS)
 OBJS = $(SRCS:.c=.o)
 
-.PHONY: all test gotest clean
+.PHONY: all test gotest cross-neon clean
+
+# Cross-compile for aarch64 and validate the NEON backend under qemu-user.
+# Requires: gcc-aarch64-linux-gnu, qemu-user.
+cross-neon:
+	aarch64-linux-gnu-gcc -O3 -Wall -Wextra -std=c99 $(INCLUDE) -c -o /tmp/h3_scale_neon.o src/scale_neon.c
+	aarch64-linux-gnu-gcc -O3 -Wall -Wextra -std=c99 $(INCLUDE) -c -o /tmp/h3_scale.o src/scale.c
+	aarch64-linux-gnu-gcc -O3 -Wall -Wextra -std=c99 $(INCLUDE) -c -o /tmp/h3_arch.o src/arch.c
+	aarch64-linux-gnu-gcc -static -O3 $(INCLUDE) -o /tmp/h3_test_scale_aarch64 \
+		/tmp/h3_scale_neon.o /tmp/h3_scale.o /tmp/h3_arch.o tests/test_scale.c -lm
+	qemu-aarch64 /tmp/h3_test_scale_aarch64
 
 all: libholloman3.a libholloman3.so
 

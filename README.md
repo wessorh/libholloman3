@@ -33,9 +33,10 @@ dialect is a single source covering all its targets.
 ## Build & test
 
 ```bash
-make          # build libholloman3.a / libholloman3.so (auto-detects arch)
-make test     # build + run the C99 test suite (tests/test_scale.c)
-make gotest   # run the Go test suite
+make           # build libholloman3.a / libholloman3.so (auto-detects arch)
+make test      # build + run the C99 test suite (tests/test_scale.c)
+make gotest    # run the Go test suite
+make cross-neon # cross-compile for aarch64 and validate NEON under qemu-user
 ```
 
 Windows (x86-64): compile `src/scale.c src/arch.c src/scale_avx2.c

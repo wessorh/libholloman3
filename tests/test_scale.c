@@ -10,6 +10,13 @@
 
 #include "holloman3.h"
 
+/* Direct access to the (internal) SSE4.1 backend for explicit validation on
+ * x86-64, where the dispatch would otherwise always pick AVX2. */
+#if defined(__x86_64__) || defined(_M_X64)
+void holloman3_vscale_sse41(uint8_t *, const uint8_t *, const int32_t *, size_t);
+void holloman3_hscale_sse41(uint8_t *, const uint8_t *, const int32_t *, size_t);
+#endif
+
 #define BITS 14
 #define ROUND_OFFSET (1 << (BITS - 1))
 
@@ -69,6 +76,22 @@ static int test_size(size_t size) {
         printf("hscale size=%zu MISMATCH\n", size);
         return 1;
     }
+
+#if defined(__x86_64__) || defined(_M_X64)
+    holloman3_vscale_sse41(got, src, coeffs, size);
+    vscale_ref(want, src, coeffs, size);
+    if (memcmp(got, want, size * 4) != 0) {
+        printf("vscale_sse41 size=%zu MISMATCH\n", size);
+        return 1;
+    }
+
+    holloman3_hscale_sse41(got, src, coeffs, size);
+    hscale_ref(want, src, coeffs, size);
+    if (memcmp(got, want, 16) != 0) {
+        printf("hscale_sse41 size=%zu MISMATCH\n", size);
+        return 1;
+    }
+#endif
 
     printf("size=%zu OK\n", size);
     free(src);
