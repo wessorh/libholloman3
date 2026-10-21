@@ -1,1 +1,7 @@
 *.test
+*.o
+*.a
+*.so
+*.dylib
+*.dll
+tests/test_scale

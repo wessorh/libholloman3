@@ -1,0 +1,11 @@
+[package]
+name = "libholloman3-sys"
+version = "0.1.0"
+edition = "2021"
+description = "Rust FFI bindings to the libholloman3 SIMD scaling kernels"
+license = "Apache-2.0"
+
+[lib]
+name = "libholloman3_sys"
+
+[dependencies]
