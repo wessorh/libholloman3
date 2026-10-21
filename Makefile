@@ -35,7 +35,7 @@ endif
 SRCS = $(CORE_SRCS) $(SIMD_SRCS)
 OBJS = $(SRCS:.c=.o)
 
-.PHONY: all test gotest cross-neon clean
+.PHONY: all test gotest cross-neon cross-windows clean
 
 # Cross-compile for aarch64 and validate the NEON backend under qemu-user.
 # Requires: gcc-aarch64-linux-gnu, qemu-user.
@@ -46,6 +46,18 @@ cross-neon:
 	aarch64-linux-gnu-gcc -static -O3 $(INCLUDE) -o /tmp/h3_test_scale_aarch64 \
 		/tmp/h3_scale_neon.o /tmp/h3_scale.o /tmp/h3_arch.o tests/test_scale.c -lm
 	qemu-aarch64 /tmp/h3_test_scale_aarch64
+
+# Cross-compile for Windows x86-64 (static) and validate under wine.
+# Requires: gcc-mingw-w64-x86-64, wine.
+MINGW = x86_64-w64-mingw32-gcc
+cross-windows:
+	$(MINGW) -O3 -Wall -Wextra -std=c99 -mavx2 -msse4.1 -DHOLLOMAN3_STATIC $(INCLUDE) -c -o /tmp/h3_win_scale.o src/scale.c
+	$(MINGW) -O3 -Wall -Wextra -std=c99 -mavx2 -msse4.1 -DHOLLOMAN3_STATIC $(INCLUDE) -c -o /tmp/h3_win_arch.o src/arch.c
+	$(MINGW) -O3 -Wall -Wextra -std=c99 -mavx2 -msse4.1 -DHOLLOMAN3_STATIC $(INCLUDE) -c -o /tmp/h3_win_avx2.o src/scale_avx2.c
+	$(MINGW) -O3 -Wall -Wextra -std=c99 -mavx2 -msse4.1 -DHOLLOMAN3_STATIC $(INCLUDE) -c -o /tmp/h3_win_sse41.o src/scale_sse41.c
+	$(MINGW) -O3 -std=c99 -mavx2 -msse4.1 -DHOLLOMAN3_STATIC $(INCLUDE) -o /tmp/h3_test_scale.exe \
+		/tmp/h3_win_scale.o /tmp/h3_win_arch.o /tmp/h3_win_avx2.o /tmp/h3_win_sse41.o tests/test_scale.c -lm
+	wine /tmp/h3_test_scale.exe
 
 all: libholloman3.a libholloman3.so
 

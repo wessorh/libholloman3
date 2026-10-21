@@ -23,7 +23,9 @@ extern "C" {
 #endif
 
 #if defined(_WIN32)
-#  if defined(HOLLOMAN3_BUILD)
+#  if defined(HOLLOMAN3_STATIC)
+#    define HOLLOMAN3_API
+#  elif defined(HOLLOMAN3_BUILD)
 #    define HOLLOMAN3_API __declspec(dllexport)
 #  else
 #    define HOLLOMAN3_API __declspec(dllimport)
