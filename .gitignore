@@ -5,3 +5,4 @@
 *.dylib
 *.dll
 tests/test_scale
+rust/target/
