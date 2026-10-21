@@ -101,7 +101,7 @@ let _ = has_avx2();
 ### Go
 
 ```go
-import "libholloman3"
+import "github.com/wessorh/libholloman3"
 
 libholloman3.VScale(dst, src, coeffs, size)  // coeffs []int32
 libholloman3.HScale(dst, src, coeffs, size)
