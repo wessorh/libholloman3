@@ -37,6 +37,10 @@ OBJS = $(SRCS:.c=.o)
 
 .PHONY: all test bench gotest cross-neon cross-windows clean
 
+# `make` with no arguments must build the library, not the first target that
+# happens to be defined below (cross-neon/cross-windows are explicit targets).
+.DEFAULT_GOAL := all
+
 # Cross-compile for aarch64 and validate the NEON backend under qemu-user.
 # Requires: gcc-aarch64-linux-gnu, qemu-user.
 cross-neon:
